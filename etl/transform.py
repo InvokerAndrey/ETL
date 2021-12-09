@@ -15,16 +15,21 @@ class Transform:
                 movie['director'] = None
             if movie['plot'] == 'N/A':
                 movie['plot'] = None
+            if movie['imdb_rating'] == 'N/A':
+                movie['imdb_rating'] = None
         return movies
 
-    def get_actors_names(self):
-        return [actor['name'] for actor in self.extract.get_actors()]
-
     def get_single_movie_actors(self, movie):
-        return self.extract.get_single_movie_actors(movie['id'])
+        actors = self.extract.get_single_movie_actors(movie['id'])
+        count = 0
+        for actor in actors:
+            if actor['name'] == 'N/A':
+                actor['name'] = None
+                count += 1
+        return actors
 
     def get_single_movie_actors_names(self, actors):
-        return ', '.join(actor['name'] for actor in actors)
+        return ', '.join(str(actor['name']) for actor in actors)
 
     def get_single_movie_writers(self, movie):
         if movie['writers']:

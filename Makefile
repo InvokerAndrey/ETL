@@ -6,3 +6,9 @@ indices:
 
 schema:
 	curl -GET http://localhost:9200/movies/_mapping
+
+view:
+	curl -GET http://localhost:9200/movies/_search?pretty
+
+delete:
+	curl -XDELETE localhost:9200/movies/

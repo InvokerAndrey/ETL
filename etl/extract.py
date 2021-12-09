@@ -16,32 +16,9 @@ class Extract:
                 cursor.execute(sql)
             return [dict(x) for x in cursor.fetchall()]
 
-    def get_actors(self):
-        """ Get actors without 'N/A' values """
-        sql = "SELECT * FROM actors WHERE name != 'N/A'"
-        return self.execute_sql(sql)
-
-    def get_actors_ids(self, actors):
-        """ Get IDs of actors that are without 'N/A' values """
-        return [actor['id'] for actor in actors]
-
-    def get_movie_actors(self):
-        """ Get movie_actors rows which don't contain actors with 'N/A' values """
-        actors_ids = self.get_actors_ids(self.get_actors())
-        sql = "SELECT * FROM movie_actors WHERE actor_id IN (%s)" % ','.join('?' for _ in actors_ids)
-        # Passing actors_ids to avoid sql injections (execute method will match list of '?' with actors_ids)
-        return self.execute_sql(sql, actors_ids)
-
-    def get_movie_actors_movies_ids(self, movie_actors):
-        """ Get IDs of movies that are in movie_actors rows which don't contain actors with 'N/A' values """
-        return [movie_actor['movie_id'] for movie_actor in movie_actors]
-
     def get_movies(self):
-        """ Get movies with valid actors """
-        movies_ids = self.get_movie_actors_movies_ids(self.get_movie_actors())
-        sql = "SELECT * FROM movies WHERE id IN (%s)" % ','.join('?' for _ in movies_ids)
-        # Passing movies_ids to avoid sql injections (execute method will match list of '?' with movies_ids)
-        return self.execute_sql(sql, movies_ids)
+        sql = "SELECT * FROM movies"
+        return self.execute_sql(sql)
 
     def get_writers(self):
         sql = "SELECT * FROM writers WHERE name != 'N/A'"
