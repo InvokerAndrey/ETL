@@ -4,8 +4,8 @@ from .extract import Extract
 
 
 class Transform:
-    def __init__(self, db):
-        self.extract = Extract(db)
+    def __init__(self, db, limit, offset):
+        self.extract = Extract(db, limit, offset)
 
     def get_valid_movies(self):
         """ Replace 'N/A' to None in description and director fields """

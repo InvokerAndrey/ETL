@@ -1,9 +1,9 @@
-from etl.load import Load
+from etl.exec import ExecuteETL
 
 
 def main():
-    load = Load(db='db.sqlite')
-    load.load_movies()
+    response = ExecuteETL('db.sqlite').exec()
+    print(response)
 
 
 if __name__ == '__main__':

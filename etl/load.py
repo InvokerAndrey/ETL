@@ -6,10 +6,11 @@ from .transform import Transform
 
 class Load:
     def __init__(self, db):
-        self.transform = Transform(db)
+        self.db = db
 
-    def load_movies(self):
-        movies = self.transform.get_movies_in_json()
+    def load_movies(self, limit, offset):
+        transform = Transform(self.db, limit, offset)
+        movies = transform.get_movies_in_json()
         query = ""
         for movie in movies:
             query += json.dumps({"index": {"_index": "movies", "_id": movie["id"]}}) + '\n'
