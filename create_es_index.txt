@@ -54,6 +54,7 @@ curl -XPUT http://127.0.0.1:9200/moviecurl -XPUT http://127.0.0.1:9200/movies -H
       },
       "title": {
         "type": "text",
+        "fielddata": true,
         "analyzer": "ru_en",
         "fields": {
           "raw": {
