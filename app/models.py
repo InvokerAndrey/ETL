@@ -27,12 +27,25 @@ class Movie(Movies):
     genre: List[str]
     director: List[str] = None
 
+    @pydantic.root_validator(pre=True)
+    def validate_genre(cls, value):
+        value['genre'] = value['genre'].split(', ')
+        value['director'] = value['director'] and value['director'].split(', ')
+        return value
+
+    @pydantic.validator('id')
+    def validate_id(cls, value):
+        if value == '':
+            raise ValueError('empty id')
+        return value
+
 
 class MoviesParams(pydantic.BaseModel):
     limit: int = 50
     page: int = 1
     sort: str = SortField.ID.value
     sort_order: str = SortOrder.ASC.value
+    search: str = ''
 
     @pydantic.validator('limit')
     def validate_limit(cls, value):
