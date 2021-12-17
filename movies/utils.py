@@ -7,7 +7,7 @@ def print_films():
         print("=" * 50)
         print('title:', film.title)
         print('-' * 50)
-        print('description:', film.description[:40], '...')
+        print('description:', film.description and film.description[:40], '...')
         print('-' * 50)
         print('creation_date:', film.creation_date)
         print('-' * 50)

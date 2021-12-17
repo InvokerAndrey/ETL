@@ -3,7 +3,7 @@ from .etl.load import Load
 
 def main():
     load = Load(db='db.sqlite')
-    load.exec()
+    load.save()
 
 
 if __name__ == '__main__':

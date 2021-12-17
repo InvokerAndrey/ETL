@@ -12,3 +12,6 @@ view:
 
 delete:
 	curl -XDELETE localhost:9200/movies/
+
+postgres:
+	psql -h localhost -p 5432 -U postgres -W
