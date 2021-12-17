@@ -2,10 +2,10 @@ import sqlite3
 
 
 class Extract:
-    def __init__(self, db):
+    def __init__(self, db, limit, offset):
         self.db = db
-        # self.limit = limit
-        # self.offset = offset
+        self.limit = limit
+        self.offset = offset
 
     def execute_sql(self, sql, args_lst=None):
         with sqlite3.connect(self.db) as connection:
@@ -23,14 +23,12 @@ class Extract:
         return self.execute_sql(sql)
 
     def get_movies(self):
-        # sql = f"SELECT * FROM movies ORDER BY id LIMIT {self.limit} OFFSET {self.offset}"
-        sql = f"SELECT * FROM movies ORDER BY id"
+        sql = f"SELECT * FROM movies ORDER BY id LIMIT {self.limit} OFFSET {self.offset}"
         return self.execute_sql(sql)
 
     def get_writers(self):
         sql = "SELECT * FROM writers WHERE name != 'N/A'"
         return self.execute_sql(sql)
-
 
     def get_writers_by_ids(self, writers_ids):
         sql = "SELECT * FROM writers WHERE id IN (%s)" % ','.join('?' for _ in writers_ids)

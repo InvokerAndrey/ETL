@@ -1,9 +1,9 @@
-from etl.load import Load
+from .etl.load import Load
 
 
 def main():
     load = Load(db='db.sqlite')
-    load.create_movies()
+    load.exec()
 
 
 if __name__ == '__main__':
