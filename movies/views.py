@@ -20,6 +20,8 @@ class Pagination(PageNumberPagination):
 
 class FilmListView(APIView):
     def get(self, request, format=None):
+        from .sqlite_to_postgres import pipeline
+        pipeline.run()
         paginator = Pagination()
         film_qs = Filmwork.objects.all()
         page = paginator.paginate_queryset(film_qs, request)

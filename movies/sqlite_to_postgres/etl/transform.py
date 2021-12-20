@@ -2,68 +2,61 @@ import json
 from typing import List
 from collections import defaultdict
 
-from .extract import Extract
-
 
 class Transform:
-    # def get_valid_movies(self):
-    #     """ Replace 'N/A' to None in description and director fields """
-    #     movies = self.extract.get_movies()
-    #     for movie in movies:
-    #         if movie['director'] == 'N/A':
-    #             movie['director'] = None
-    #         if movie['plot'] == 'N/A':
-    #             movie['plot'] = None
-    #         if movie['imdb_rating'] == 'N/A':
-    #             movie['imdb_rating'] = None
-    #     return movies
+    def validate_genres(self, genres_str: str) -> set:
+        """
+        :param genres_str: 'Action, Adventure, Action, Sci-Fi, ...'
+        :return: {'Action', 'Adventure', 'Sci-Fi', ...}
+        """
+        return set(genres_str.split(', '))
 
-    # def get_single_movie_actors(self, movie):
-    #     actors = self.extract.get_single_movie_actors(movie['id'])
-    #     count = 0
-    #     for actor in actors:
-    #         if actor['name'] == 'N/A':
-    #             actor['name'] = None
-    #             count += 1
-    #     return actors
+    def validate_actors(self, raw_actors: List[dict]):
+        actors = defaultdict(set)
+        for raw_actors in raw_actors:
+            actors[raw_actors['name']].add(raw_actors['movie_id'])
+        return actors
 
-    # def get_single_movie_actors_names(self, actors):
-    #     return ', '.join(str(actor['name']) for actor in actors)
-    #
-    # def get_single_movie_writers(self, movie):
-    #     if movie['writers']:
-    #         writers = json.loads(movie['writers'])
-    #         writers_ids = [writer['id'] for writer in writers]
-    #         return self.extract.get_writers_by_ids(writers_ids)
-    #     return None
-    #
-    # def get_single_movie_writers_names(self, writers):
-    #     if writers:
-    #         return ', '.join(writer['name'] for writer in writers)
-    #     return None
+    def validate_writers(self, raw_writers: List[dict], raw_movie_writers: List[dict]):
+        """
+        :param raw_writers: [
+            {
+                'id': writer.id,
+                'name': writer.name
+            }, ...
+        ]
+        :param raw_movie_writers: [
+            {
+                'movie_id': movie.id,
+                'writers': "[{'id': writer.id}, ...]"
+            }
+        ]
+        :return: { writer_name: {movie_id, ...} }
+        """
+        writers = defaultdict(set)
+        for raw_writer in raw_writers:
+            for raw_movie_writer in raw_movie_writers:
+                if not raw_movie_writer['writers']:
+                    continue
+                for raw_writer_id in json.loads(raw_movie_writer['writers']):
+                    name = raw_writer['name']
+                    writers[name] |= set()
+                    if raw_writer['id'] == raw_writer_id['id']:
+                        writers[name].add(raw_movie_writer['movie_id'])
+        return writers
 
-    # def get_movies_in_json(self):
-    #     json_movies = []
-    #     all_movies = self.get_valid_movies()
-    #     for movie in all_movies:
-    #         actors = self.get_single_movie_actors(movie)
-    #         writers = self.get_single_movie_writers(movie)
-    #         json_movie = {
-    #             'actors': actors,
-    #             'description': movie['plot'],
-    #             'directors': movie['director'],
-    #             'genres': movie['genre'],
-    #             'id': movie['id'],
-    #             'rating': movie['imdb_rating'],
-    #             'title': movie['title'],
-    #             'writers': writers,
-    #         }
-    #         json_movies.append(json_movie)
-    #     return json_movies
-
-    def validate_genres(self, raw_genres: List[dict]):
-        genres = defaultdict(set)
-        for raw_genre in raw_genres:
-            for genre in raw_genre['genre'].split(', '):
-                genres[genre].add(raw_genre['id'])
-        return genres
+    def validate_directors(self, raw_directors):
+        """
+        :param raw_directors: [
+            {
+                'movie_id': ,
+                'director': ['director.name',...],
+            }
+        ]
+        :return:
+        """
+        directors = defaultdict(set)
+        for raw_director in raw_directors:
+            for name in raw_director['director'].split(', '):
+                directors[name].add(raw_director['movie_id'])
+        return directors

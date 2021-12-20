@@ -8,7 +8,6 @@ import uuid
 
 class Genre(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    old_movie_id = models.CharField(max_length=255)
     name = models.CharField(_('название'), max_length=255, unique=True)
     description = models.TextField(_('описание'), blank=True, null=True)
 
@@ -29,7 +28,6 @@ class PersonRole(models.TextChoices):
 
 class Person(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    old_id = models.CharField(max_length=255)
     first_name = models.CharField(_('имя'), max_length=255, blank=True, null=True, default='')
     last_name = models.CharField(_('фамилия'), max_length=255, blank=True, null=True, default='')
     role = models.CharField(_('роль'), max_length=20, choices=PersonRole.choices)
