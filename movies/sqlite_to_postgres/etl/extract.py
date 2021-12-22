@@ -43,7 +43,7 @@ class Extract:
         return self.execute_sql(sql)
 
     def get_movies(self, limit, offset):
-        sql = f"SELECT id as 'old_id', title, plot as 'description', imdb_rating as 'rating' from movies " \
+        sql = f"SELECT id as 'old_id', title, genre, plot as 'description', imdb_rating as 'rating' from movies " \
               f"ORDER BY id LIMIT {limit} OFFSET {offset}"
         return self.execute_sql(sql)
 
@@ -52,7 +52,7 @@ class Extract:
         return self.execute_sql(sql)
 
     def get_movie_writers(self, limit=100, offset=0):
-        sql = f"SELECT id as 'movie_id', writers FROM movies WHERE writers != '' LIMIT {limit} OFFSET {offset}"
+        sql = f"SELECT id as 'movie_id', writers, writer FROM movies ORDER BY id LIMIT {limit} OFFSET {offset}"
         return self.execute_sql(sql)
 
     def get_directors(self, limit=100, offset=0):

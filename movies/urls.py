@@ -6,6 +6,7 @@ from . import views
 
 urlpatterns = [
     path('', views.FilmListView.as_view(), name='films'),
+    path('etl/sqlite_to_postgres/', views.SqliteToPostgres.as_view(), name='sqlite_to_postgres'),
     path('<str:pk>', views.FilmDetailView.as_view(), name='film'),
 ]
 
