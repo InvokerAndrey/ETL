@@ -19,6 +19,21 @@ class Genre(TimeStampedModel):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Так, а не id is None, потому что с uuid такое не работает
+        if self.created != self.modified:
+            # Old object
+            from .postgres_to_elasticsearch.pipeline import PipelineGenre
+            PipelineGenre().migrate_genre_updates(self)
+
+    def delete(self, *args, **kwargs):
+        # Получаю список айдишников фильмов, в которых присутствовал данный жанр, перед тем как мы его потеряем
+        movies_ids = list(Filmwork.objects.values_list('id', flat=True).filter(genres=self))
+        super().delete(*args, **kwargs)
+        from .postgres_to_elasticsearch.pipeline import PipelineGenre
+        PipelineGenre().delete_genre_from_movies(movies_ids)
+
 
 class PersonRole(models.TextChoices):
     ACTOR = 'actor', _('актер')
@@ -43,6 +58,21 @@ class Person(TimeStampedModel):
 
     def __str__(self):
         return f'{self.role}: {self.first_name} {self.last_name}'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Так, а не id is None, потому что с uuid такое не работает
+        if self.created != self.modified:
+            # Old object
+            from .postgres_to_elasticsearch.pipeline import PipelinePerson
+            PipelinePerson().migrate_person_updates(self)
+
+    def delete(self, *args, **kwargs):
+        # Получаю список айдишников фильмов, в которых присутствовал данный чел, перед тем как мы его потеряем
+        movies_ids = list(Filmwork.objects.values_list('id', flat=True).filter(person=self))
+        super().delete(*args, **kwargs)
+        from .postgres_to_elasticsearch.pipeline import PipelinePerson
+        PipelinePerson().delete_person_from_movies(movies_ids)
 
 
 class FilmworkType(models.TextChoices):
@@ -69,3 +99,20 @@ class Filmwork(TimeStampedModel):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        from .postgres_to_elasticsearch.pipeline import PipelineMovies
+        # Так, а не id is None, потому что с uuid такое не работает
+        if self.created == self.modified:
+            # New object
+            PipelineMovies().migrate_new_movie(self)
+        else:
+            # Old object
+            PipelineMovies().migrate_movie_updates(self)
+
+    def delete(self, *args, **kwargs):
+        movie_id = str(self.id)
+        super().delete(*args, **kwargs)
+        from .postgres_to_elasticsearch.pipeline import PipelineMovies
+        PipelineMovies().delete_movie(movie_id)

@@ -15,7 +15,8 @@ class Load:
         for movie in movies:
             query += json.dumps({"index": {"_index": "movies", "_id": movie["id"]}}) + '\n'
             query += json.dumps(movie) + '\n'
-
+        print('QUERY:', '*' * 100)
+        print(query)
         return requests.post(
             "http://127.0.0.1:9200/_bulk?filter_path=items.*.error",
             headers={'Content-Type': 'application/x-ndjson'},

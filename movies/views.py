@@ -36,6 +36,13 @@ class SqliteToPostgres(APIView):
         return HttpResponseRedirect(reverse('films'))
 
 
+class PostgresToElasticsearch(APIView):
+    def get(self, request, format=None):
+        from .postgres_to_elasticsearch.pipeline import PipelineMovies
+        PipelineMovies().migrate_all_movies()
+        return HttpResponseRedirect(reverse('films'))
+
+
 class FilmDetailView(APIView):
     def _get_film(self, pk):
         return get_object_or_404(Filmwork, pk=pk)
