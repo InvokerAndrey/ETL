@@ -32,6 +32,7 @@ class PipelineETL:
                 transformer.send(movies)
                 offset += limit
         except Exception as e:
+            logger.error('Something went wrong!!!!!!!!!!!!!!!')
             logger.exception(e)
             self.state.set_state(offset)
         else:

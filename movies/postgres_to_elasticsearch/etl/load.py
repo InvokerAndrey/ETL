@@ -1,10 +1,13 @@
 import requests
 import json
 
+from .utils import backoff
+
 
 class Load:
     BASE_URL = 'http://127.0.0.1:9200/'
 
+    @backoff()
     def _load(self, url, query):
         return requests.post(
             url=url,
