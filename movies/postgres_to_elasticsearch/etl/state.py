@@ -16,7 +16,6 @@ class State:
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
 
-
     def set_state(self, value: int):
         with open(self.storage_file, 'w') as f:
             f.write(str(value))
